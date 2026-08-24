@@ -38,6 +38,16 @@ jobs:
       - name: Gerar projeto Android nativo (expo prebuild)
         run: npx expo prebuild --platform android --no-install
 
+      - name: Gerar bundle JavaScript para o APK
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx expo export:embed \
+            --platform android \
+            --dev false \
+            --entry-file node_modules/expo/AppEntry.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
       - name: Dar permissão de execução ao gradlew
         run: chmod +x android/gradlew
 
