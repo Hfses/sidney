@@ -1,33 +1,23 @@
 {
   "expo": {
     "name": "Calculadora de Bobinas",
-    "slug": "calculadora-bobinas",
+    "slug": "calculadora-de-bobinas",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0A0E1A"
+      "backgroundColor": "#080C14"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.hfses.calculadoradebobinas",
+      "adaptiveIcon": {
+        "backgroundColor": "#080C14"
+      }
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.calculadora.bobinas"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0A0E1A"
-      },
-      "package": "com.calculadora.bobinas"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
-    },
-    "plugins": [
-      "expo-linear-gradient"
-    ]
+      "supportsTablet": false,
+      "bundleIdentifier": "com.hfses.calculadoradebobinas"
+    }
   }
 }

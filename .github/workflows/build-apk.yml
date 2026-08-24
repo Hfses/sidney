@@ -1,0 +1,83 @@
+name: Build Android APK
+
+# Gera o APK Android automaticamente pelo GitHub, sem precisar instalar
+# nada no computador. Basta subir este projeto para um repositório no
+# GitHub — o workflow roda sozinho e disponibiliza o .apk para download.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Configurar Java (necessário para o Gradle)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Rodar testes unitários (calculateCoil)
+        run: npx jest
+
+      - name: Gerar projeto Android nativo (expo prebuild)
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Dar permissão de execução ao gradlew
+        run: chmod +x android/gradlew
+
+      - name: Compilar APK (debug — instalável direto no celular)
+        run: cd android && ./gradlew assembleDebug --no-daemon
+
+      - name: Publicar o APK como artefato do workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculadora-de-bobinas-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+  # ────────────────────────────────────────────────────────────────────
+  # Build de RELEASE (assinado), opcional — só roda se você configurar
+  # os secrets de keystore no repositório (Settings → Secrets and
+  # variables → Actions). Veja instruções completas no README.md.
+  # ────────────────────────────────────────────────────────────────────
+  # build-release:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20, cache: npm }
+  #     - uses: actions/setup-java@v4
+  #       with: { distribution: temurin, java-version: 17 }
+  #     - run: npm ci
+  #     - run: npx expo prebuild --platform android --no-install
+  #     - name: Restaurar keystore a partir do secret
+  #       run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+  #     - name: Compilar APK assinado
+  #       run: |
+  #         cd android
+  #         chmod +x gradlew
+  #         ./gradlew assembleRelease \
+  #           -Pandroid.injected.signing.store.file=app/release.keystore \
+  #           -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+  #           -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
+  #           -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: calculadora-de-bobinas-apk-release
+  #         path: android/app/build/outputs/apk/release/app-release.apk

@@ -8,6 +8,12 @@ web-build/
 *.key
 *.mobileprovision
 *.orig.*
-web-build/
-.env
 .DS_Store
+*.pem
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.env*.local
+android/app/build/
+android/.gradle/
+ios/Pods/
